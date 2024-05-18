@@ -1,0 +1,18 @@
+{% extends 'cardiology/base.html' %}
+
+{% block title %}Doctor Details{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>{{ doctor.username }}</h2>
+        <p><strong>Name:</strong> {{ doctor.name }}</p>
+        <p><strong>Surname:</strong> {{ doctor.surname }}</p>
+        <p><strong>Phone Number:</strong> {{ doctor.phone_number }}</p>
+        <p><strong>Email:</strong> {{ doctor.email }}</p>
+        <p><strong>Specialist:</strong> {{ doctor.specialist }}</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger mt-3">logout</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+<!-- patient.html -->
+{% extends 'cardiology/base.html' %}
+
+{% block title %}{{ patient.name }} {{ patient.surname }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Patient: {{ patient.name }} {{ patient.surname }}</h1>
+        <p><strong>Telefon:</strong> {{ patient.phone_number }}</p>
+        <p><strong>Email:</strong> {{ patient.email }}</p>
+        <!-- Další informace o pacientovi -->
+
+        <h2>Current diagnosis:</h2>
+        <ul class="list-group">
+            {% for diagnosis in current_diagnoses %}
+                <li class="list-group-item">{{ diagnosis.diagnosis_name }} - {{ diagnosis.comment }}</li>
+            {% empty %}
+                <li class="list-group-item">No diagnosis</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Current medication</h2>
+        <ul class="list-group">
+            {% for medication in current_medications %}
+                <li class="list-group-item">{{ medication.medication_item }} - {{ medication.comment }}</li>
+            {% empty %}
+                <li class="list-group-item">No medication</li>
+            {% endfor %}
+        </ul>
+        <br>
+        <a class="btn btn-primary" href="{% url 'medication_management_form' %}">Medication prescription</a>
+    </div>
+{% endblock %}

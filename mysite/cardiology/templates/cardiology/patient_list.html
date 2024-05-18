@@ -1,0 +1,47 @@
+{% extends 'cardiology/base.html' %}
+
+{% block title %}List of patients{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>List of patients</h1>
+        <a href="{% url 'create_patient' %}" class="btn btn-primary">Add new patient</a>
+        <ul class="list-group mt-3">
+            {% for patient in patients %}
+                <li class="list-group-item">
+                    <a href="{% url 'patient_detail' patient.id %}">
+                        {{ patient.name }} {{ patient.surname }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        {% if patients.has_other_pages %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination mt-3">
+                {% if patients.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">&laquo; First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ patients.previous_page_number }}">Prevoius</a>
+                    </li>
+                {% endif %}
+                {% for num in patients.paginator.page_range %}
+                    <li class="page-item {% if num == patients.number %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                {% if patient_records.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ patients.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ patients.paginator.num_pages }}">Last &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'cardiology/base.html' %}
+
+{% block title %}List of Doctors{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>List of Doctors</h1>
+        <ul class="list-group">
+            {% for doctor in doctors %}
+                <li class="list-group-item">
+                    <strong>Name:</strong> {{ doctor.name }} {{ doctor.surname }}<br>
+                    <strong>Email:</strong> {{ doctor.email }}<br>
+                    <strong>Phone:</strong> {{ doctor.phone_number }}<br>
+                    <strong>Specialist:</strong> {{ doctor.specialist }}
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'create_doctor' %}" class="btn btn-primary mt-3">Add New Doctor</a>
+    </div>
+{% endblock %}

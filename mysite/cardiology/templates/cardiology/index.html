@@ -1,0 +1,23 @@
+<!-- login.html -->
+{% extends 'cardiology/base.html' %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>Sign in</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <a href="{% url 'create_doctor' %}" class="btn btn-success mt-3">New Doctor</a>
+    </div>
+{% endblock %}
