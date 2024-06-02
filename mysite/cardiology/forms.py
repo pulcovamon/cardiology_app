@@ -47,14 +47,21 @@ class DoctorForm(forms.ModelForm):
         return doctor
 
 
-class ECGResultForm(forms.ModelForm):
-    class Meta:
-        model = ECGResult
-        exclude = ['doctor_id', 'time_date']
-
+class BaseModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
+        # Nastavení všech nepovinných polí jako volitelná
+        for field_name, field in self.fields.items():
+            model_field = self._meta.model._meta.get_field(field_name)
+            if model_field.blank:
+                field.required = False
+
+        # Nastavení zobrazení jména a příjmení pacienta
+        if 'patient_id' in self.fields:
+            self.fields['patient_id'].queryset = Patient.objects.all()
+            self.fields['patient_id'].label_from_instance = lambda obj: f"{obj.name} {obj.surname}"
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -66,49 +73,55 @@ class ECGResultForm(forms.ModelForm):
         return instance
 
 
-class LaboratoryAnalyteResultForm(forms.ModelForm):
+class ECGResultForm(BaseModelForm):
+    class Meta:
+        model = ECGResult
+        exclude = ['doctor_id', 'time_date']
+
+
+class LaboratoryAnalyteResultForm(BaseModelForm):
     class Meta:
         model = LaboratoryAnalyteResult
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']
 
 
-class PulseHeartBeatForm(forms.ModelForm):
+class PulseHeartBeatForm(BaseModelForm):
     class Meta:
         model = PulseHeartBeat
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']
 
 
-class BloodPressureForm(forms.ModelForm):
+class BloodPressureForm(BaseModelForm):
     class Meta:
         model = BloodPressure
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']
 
 
-class RespirationForm(forms.ModelForm):
+class RespirationForm(BaseModelForm):
     class Meta:
         model = Respiration
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']
 
 
-class BodyMassIndexForm(forms.ModelForm):
+class BodyMassIndexForm(BaseModelForm):
     class Meta:
         model = BodyMassIndex
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']
 
 
-class PulseOximetryForm(forms.ModelForm):
+class PulseOximetryForm(BaseModelForm):
     class Meta:
         model = PulseOximetry
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']
 
 
-class ProblemDiagnosisForm(forms.ModelForm):
+class ProblemDiagnosisForm(BaseModelForm):
     class Meta:
         model = ProblemDiagnosis
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']
 
 
-class MedicationManagementForm(forms.ModelForm):
+class MedicationManagementForm(BaseModelForm):
     class Meta:
         model = MedicationManagement
-        fields = "__all__"
+        exclude = ['doctor_id', 'time_date']

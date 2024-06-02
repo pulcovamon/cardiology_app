@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from django.db.models import F
 from django.db.models.query import QuerySet
 from django.views.generic import ListView, DetailView
@@ -127,7 +128,7 @@ class PatientRecordsView(ListView):
 class PatientCreateView(CreateView):
     model = Patient
     form_class = PatientForm
-    success_url = "patients/"
+    success_url = reverse_lazy('patient_list')
     template_name = (
         "cardiology/form.html"  # Použití společné šablony pro vytvoření
     )
@@ -150,108 +151,67 @@ class DoctorCreateView(CreateView):
         return context
 
 
-class ECGResultFormView(FormView):
+class BaseFormView(LoginRequiredMixin, FormView):
+    success_url = reverse_lazy('success_url')
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+    
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+class ECGResultFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = ECGResultForm
-    success_url = "/success/"
     extra_context = {"form_title": "ECG result"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class LaboratoryAnalyteResultFormView(FormView):
+class LaboratoryAnalyteResultFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = LaboratoryAnalyteResultForm
-    success_url = "/success/"
     extra_context = {"form_title": "Laboratory Analyte result"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class PulseHeartBeatFormView(FormView):
+class PulseHeartBeatFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = PulseHeartBeatForm
-    success_url = "/success/"
     extra_context = {"form_title": "Pulse heartbeat"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class BloodPressureFormView(FormView):
+class BloodPressureFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = BloodPressureForm
-    success_url = "/success/"
     extra_context = {"form_title": "Blood pressure"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class RespirationFormView(FormView):
+class RespirationFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = RespirationForm
-    success_url = "/success/"
     extra_context = {"form_title": "Respiration"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class BodyMassIndexFormView(FormView):
+class BodyMassIndexFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = BodyMassIndexForm
-    success_url = "/success/"
     extra_context = {"form_title": "BMI"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class PulseOximetryFormView(FormView):
+class PulseOximetryFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = PulseOximetryForm
-    success_url = "/success/"
     extra_context = {"form_title": "Pulse oximetry"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class ProblemDiagnosisFormView(FormView):
+class ProblemDiagnosisFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = ProblemDiagnosisForm
-    success_url = "/success/"
     extra_context = {"form_title": "Problem/diagnosis"}
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-class MedicationManagementFormView(FormView):
+class MedicationManagementFormView(BaseFormView):
     template_name = "cardiology/form.html"
     form_class = MedicationManagementForm
-    success_url = "/success/"
     extra_context = {"form_title": "Medication"}
-
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
 
 
 class RecordDetailView(DetailView):
     template_name = "cardiology/record.html"
-    context_object_name = "record"
+    context_object_name = "examination"
 
 
 class ECGResultDetailView(RecordDetailView):
@@ -259,7 +219,8 @@ class ECGResultDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "ECG result detail"
+        context["examination_title"] = "ECG result detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -268,7 +229,8 @@ class LaboratoryAnalyteResultDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "Laboratory analyte result detail"
+        context["examination_title"] = "Laboratory analyte result detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -277,7 +239,8 @@ class PulseHeartBeatDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "Pulse heartbeat detail"
+        context["examination_title"] = "Pulse heartbeat detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -286,7 +249,8 @@ class BloodPressureDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "Blood pressure detail"
+        context["examination_title"] = "Blood pressure detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -295,7 +259,8 @@ class RespirationDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "Respiration detail"
+        context["examination_title"] = "Respiration detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -304,7 +269,8 @@ class BodyMassIndexDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "BMI detail"
+        context["examination_title"] = "BMI detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -313,7 +279,8 @@ class PulseOximetryDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "Pulse oximetry detail"
+        context["examination_title"] = "Pulse oximetry detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -322,7 +289,8 @@ class ProblemDiagnosisDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = "Problem/diagnosis detail"
+        context["examination_title"] = "Problem/diagnosis detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
 
 
@@ -331,5 +299,22 @@ class MedicationManagementDetailView(RecordDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["record_title"] = " Medication detail"
+        context["examination_title"] = "Medication detail"
+        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
         return context
+
+
+def generate_json(request, model_name, pk):
+    json_data = {}
+
+    if model_name == 'ecg-result':
+        record = ECGResult.objects.get(pk=pk)
+        json_data['id'] = record.pk
+        json_data['field1'] = record.field1
+
+    elif model_name == 'laboratory-analyte-result':
+        record = LaboratoryAnalyteResult.objects.get(pk=pk)
+        json_data['id'] = record.pk
+        json_data['field1'] = record.field1
+
+    return JsonResponse(json_data)

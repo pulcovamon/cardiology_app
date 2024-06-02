@@ -28,6 +28,6 @@
             {% endfor %}
         </ul>
         <br>
-        <a class="btn btn-primary" href="{% url 'medication_management_form' %}">Medication prescription</a>
+        <a class="btn btn-primary" href="{% url 'patient_records' patient.id %}">Records</a>
     </div>
 {% endblock %}

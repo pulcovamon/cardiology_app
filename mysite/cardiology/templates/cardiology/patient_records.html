@@ -1,26 +1,66 @@
-<!-- patient_records.html -->
 {% extends 'cardiology/base.html' %}
 
-{% block title %}Záznamy o pacientovi: {{ patient.name }} {{ patient.surname }}{% endblock %}
+{% block title %}Patient records{% endblock %}
 
 {% block content %}
-    <h1>Záznamy o pacientovi: {{ patient.name }} {{ patient.surname }}</h1>
+    <h1>Patient records</h1>
     <ul>
-        {% for record in patient_records %}
-            <li>{{ record }}</li>
-            <!-- Další informace o záznamu, pokud je potřeba -->
+        {% for ecg_result in patient_records.ecg_results %}
+            <li>ECG Result: {{ ecg_result.time_date }} <a href="{% url 'ecg_result_detail' ecg_result.pk %}">Detail</a></li>
+            <!-- Další informace o ECG výsledku, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for laboratory_result in patient_records.laboratory_results %}
+            <li>Laboratory Analyte Result: {{ laboratory_result.time_date }} <a href="{% url 'laboratory_analyte_result_detail' laboratory_result.pk %}">Detail</a></li>
+            <!-- Další informace o laboratorním výsledku, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for pulse_heartbeat in patient_records.pulse_heartbeats %}
+            <li>Pulse Heartbeat: {{ pulse_heartbeat.time_date }} <a href="{% url 'pulse_heartbeat_detail' pulse_heartbeat.pk %}">Detail</a></li>
+            <!-- Další informace o pulsu a srdečním tepu, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for blood_pressure in patient_records.blood_pressures %}
+            <li>Blood Pressure: {{ blood_pressure.time_date }} <a href="{% url 'blood_pressure_detail' blood_pressure.pk %}">Detail</a></li>
+            <!-- Další informace o krevním tlaku, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for respiration in patient_records.respirations %}
+            <li>Respiration: {{ respiration.time_date }} <a href="{% url 'respiration_detail' respiration.pk %}">Detail</a></li>
+            <!-- Další informace o dýchání, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for bmi in patient_records.bmis %}
+            <li>BMI: {{ bmi.time_date }} <a href="{% url 'body_mass_index_detail' bmi.pk %}">Detail</a></li>
+            <!-- Další informace o BMI, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for pulse_oximetry in patient_records.pulse_oximetries %}
+            <li>Pulse Oximetry: {{ pulse_oximetry.time_date }} <a href="{% url 'pulse_oximetry_detail' pulse_oximetry.pk %}">Detail</a></li>
+            <!-- Další informace o pulsním oxymetru, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for problem_diagnosis in patient_records.problem_diagnoses %}
+            <li>Problem Diagnosis: {{ problem_diagnosis.time_date }} <a href="{% url 'problem_diagnosis_detail' problem_diagnosis.pk %}">Detail</a></li>
+            <!-- Další informace o diagnostice problému, pokud je potřeba -->
+        {% endfor %}
+    
+        {% for medication_management in patient_records.medication_managements %}
+            <li>Medication Management: {{ medication_management.time_date }} <a href="{% url 'medication_management_detail' medication_management.pk %}">Detail</a></li>
+            <!-- Další informace o správě léků, pokud je potřeba -->
         {% endfor %}
     </ul>
+    
 
     {% if patient_records.has_other_pages %}
     <nav aria-label="Page navigation">
         <ul class="pagination">
             {% if patient_records.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page=1">&laquo; První</a>
+                    <a class="page-link" href="?page=1">&laquo; First</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ patient_records.previous_page_number }}">Předchozí</a>
+                    <a class="page-link" href="?page={{ patient_records.previous_page_number }}">Previous</a>
                 </li>
             {% endif %}
             {% for num in patient_records.paginator.page_range %}
@@ -30,10 +70,10 @@
             {% endfor %}
             {% if patient_records.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ patient_records.next_page_number }}">Další</a>
+                    <a class="page-link" href="?page={{ patient_records.next_page_number }}">Next</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ patient_records.paginator.num_pages }}">Poslední &raquo;</a>
+                    <a class="page-link" href="?page={{ patient_records.paginator.num_pages }}">Last &raquo;</a>
                 </li>
             {% endif %}
         </ul>

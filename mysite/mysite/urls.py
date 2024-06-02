@@ -45,6 +45,7 @@ from cardiology.views import (
     DoctorDetailView,
     success_view,
     DoctorListView,
+    generate_json
 )
 
 
@@ -77,5 +78,5 @@ urlpatterns = [
     path('doctors', DoctorListView.as_view(), name='doctor_list'),
     path('success/', success_view, name='success_url'),
     path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
-]
+    path('<str:model_name>/<int:pk>/generate-json/', generate_json, name='generate_json'),]
 

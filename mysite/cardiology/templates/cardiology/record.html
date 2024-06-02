@@ -1,15 +1,20 @@
-<!-- record.html -->
 {% extends 'cardiology/base.html' %}
 
-{% block title %}Detail {{ examination_title }}{% endblock %}
+{% block title %}{{ examination_title }}{% endblock %}
 
 {% block content %}
-    <h1>Detail {{ examination_title }}</h1>
+    <h1>{{ examination_title }}</h1>
     <h2>{{ examination.title }}</h2>
-    <p><strong>Pacient:</strong> {{ examination.patient }}</p>
-    <p><strong>Datum a čas provedení:</strong> {{ examination.datetime }}</p>
-    <!-- Další informace o vyšetření -->
+    <p><strong>Patient:</strong> {{ examination.patient }}</p>
+    <p><strong>Date and Time of Examination:</strong> {{ examination.datetime }}</p>
+    
+    {% for field_name, field_value in fields.items %}
+        <p><strong>{{ field_name }}:</strong> {{ field_value }}</p>
+    {% endfor %}
+
     {% if examination.comment %}
-        <p><strong>Komentář:</strong> {{ examination.comment }}</p>
+        <p><strong>Comment:</strong> {{ examination.comment }}</p>
     {% endif %}
+    
+   
 {% endblock %}
