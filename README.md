@@ -22,8 +22,13 @@
     - BMI
     - Pulse oximetry
  
-Startp app:
+Start app:
 ```
+poetry init
+poetry install
+source .venv/bin/activate
 cd mysite
+python manage.py makemigrations cardiology
+python manage.py migrate
 python manage.py runserver  
 ```
