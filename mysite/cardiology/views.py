@@ -8,6 +8,8 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.apps import apps
 
 from .forms import (
     DoctorForm,
@@ -60,7 +62,7 @@ class DoctorDetailView(LoginRequiredMixin, DetailView):
 
 class DoctorListView(ListView):
     model = Doctor
-    template_name = 'cardiology/doctor_list.html'  # Název šablony pro zobrazení seznamu lékařů
+    template_name = 'cardiology/doctor_list.html'
     context_object_name = 'doctors'
 
 
@@ -130,12 +132,12 @@ class PatientCreateView(CreateView):
     form_class = PatientForm
     success_url = reverse_lazy('patient_list')
     template_name = (
-        "cardiology/form.html"  # Použití společné šablony pro vytvoření
+        "cardiology/form.html"
     )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form_title"] = "Patient"  # Název stránky pro vytvoření pacienta
+        context["form_title"] = "Patient"
         return context
 
 
@@ -220,7 +222,10 @@ class ECGResultDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "ECG result detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -230,7 +235,10 @@ class LaboratoryAnalyteResultDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "Laboratory analyte result detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -240,7 +248,10 @@ class PulseHeartBeatDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "Pulse heartbeat detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -250,7 +261,10 @@ class BloodPressureDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "Blood pressure detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -260,7 +274,10 @@ class RespirationDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "Respiration detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -270,7 +287,10 @@ class BodyMassIndexDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "BMI detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -280,7 +300,10 @@ class PulseOximetryDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "Pulse oximetry detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -290,7 +313,10 @@ class ProblemDiagnosisDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "Problem/diagnosis detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
@@ -300,21 +326,210 @@ class MedicationManagementDetailView(RecordDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["examination_title"] = "Medication detail"
-        context["fields"] = [field.verbose_name for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient', 'datetime', 'comment']]
+        context["title"] = self.model._meta.model_name
+        patient = context["examination"].patient_id
+        context["patient"] = f"{patient.name} {patient.surname}"
+        context["fields"] = [(field.verbose_name, getattr(self.object, field.name)) for field in self.model._meta.fields if field.name not in ['id', 'title', 'patient_id', 'datetime', 'comment']]
         return context
 
 
-def generate_json(request, model_name, pk):
-    json_data = {}
+def export_to_fhir(request, model_name, pk):
+    model = apps.get_model('cardiology', model_name)
+    examination = get_object_or_404(model, id=pk)
+    fhir_observation = generate_fhir_observation(examination)
+    return JsonResponse(fhir_observation)
 
-    if model_name == 'ecg-result':
-        record = ECGResult.objects.get(pk=pk)
-        json_data['id'] = record.pk
-        json_data['field1'] = record.field1
 
-    elif model_name == 'laboratory-analyte-result':
-        record = LaboratoryAnalyteResult.objects.get(pk=pk)
-        json_data['id'] = record.pk
-        json_data['field1'] = record.field1
+def generate_fhir_observation(examination):
+    fhir_observation = {
+        "resourceType": "Observation",
+        "status": "final",
+        "category": [{
+            "coding": [{
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "exam",
+                "display": "Examination"
+            }]
+        }],
+        "subject": {
+            "reference": f"Patient/{examination.patient_id.id}",
+            "display": f"{examination.patient_id.name} {examination.patient_id.surname}"
+        },
+        "effectiveDateTime": examination.time_date.isoformat() if examination.time_date else ""
+    }
+    
+    if isinstance(examination, ECGResult):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": examination.ecg_type
+            }]
+        }
+        fhir_observation["component"] = [
+            {
+                "code": {
+                    "coding": [{
+                        "system": "http://loinc.org",
+                        "code": "",
+                        "display": "Arterial Heart Rate"
+                    }]
+                },
+                "valueInteger": examination.arterial_heart_rate
+            },
+            {
+                "code": {
+                    "coding": [{
+                        "system": "http://loinc.org",
+                        "code": "",
+                        "display": "Ventricular Heart Rate"
+                    }]
+                },
+                "valueInteger": examination.ventricular_heart_rate
+            },
+            {
+                "code": {
+                    "coding": [{
+                        "system": "http://loinc.org",
+                        "code": "",
+                        "display": "QT interval"
+                    }]
+                },
+                "valueInteger": examination.qt_interval_global
+            },
+            {
+                "code": {
+                    "coding": [{
+                        "system": "http://loinc.org",
+                        "code": "",
+                        "display": "QRS complex"
+                    }]
+                },
+                "valueInteger": examination.qrs_duration_global
+            }
+        ]
+    elif isinstance(examination, LaboratoryAnalyteResult):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": examination.analyte_name
+            }]
+        }
+        fhir_observation["valueString"] = examination.analyte_result if examination.analyte_result else ""
+    elif isinstance(examination, PulseHeartBeat):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": "Heart rate"
+            }]
+        }
+        fhir_observation["valueQuantity"] = {
+            "value": examination.rate,
+            "unit": "beats/minute",
+            "system": "http://unitsofmeasure.org",
+            "code": "/min"
+        }
+    elif isinstance(examination, BloodPressure):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": "Blood pressure systolic & diastolic"
+            }]
+        }
+        fhir_observation["component"] = [
+            {
+                "code": {
+                    "coding": [{
+                        "system": "http://loinc.org",
+                        "code": "8480-6",
+                        "display": "Systolic blood pressure"
+                    }]
+                },
+                "valueQuantity": {
+                    "value": examination.systolic,
+                    "unit": "mmHg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mm[Hg]"
+                }
+            },
+            {
+                "code": {
+                    "coding": [{
+                        "system": "http://loinc.org",
+                        "code": "8462-4",
+                        "display": "Diastolic blood pressure"
+                    }]
+                },
+                "valueQuantity": {
+                    "value": examination.diastolic,
+                    "unit": "mmHg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mm[Hg]"
+                }
+            }
+        ]
+    elif isinstance(examination, Respiration):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": "Respiratory rate"
+            }]
+        }
+        fhir_observation["valueQuantity"] = {
+            "value": examination.rate,
+            "unit": "breaths/minute",
+            "system": "http://unitsofmeasure.org",
+            "code": "/min"
+        }
+    elif isinstance(examination, BodyMassIndex):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": "Body mass index (BMI) [Ratio]"
+            }]
+        }
+        fhir_observation["valueQuantity"] = {
+            "value": examination.bmi,
+            "unit": "kg/m2",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg/m2"
+        }
+    elif isinstance(examination, PulseOximetry):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": "Oxygen saturation in Arterial blood by Pulse oximetry"
+            }]
+        }
+        fhir_observation["valueQuantity"] = {
+            "value": examination.spo2,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+        }
+    elif isinstance(examination, ProblemDiagnosis):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": "Diagnosis"
+            }]
+        }
+        fhir_observation["valueString"] = examination.diagnosis_name
+    elif isinstance(examination, MedicationManagement):
+        fhir_observation["code"] = {
+            "coding": [{
+                "system": "http://loinc.org",
+                "code": "",
+                "display": "Medication management"
+            }]
+        }
+        fhir_observation["valueString"] = examination.medication
 
-    return JsonResponse(json_data)
+    return fhir_observation
