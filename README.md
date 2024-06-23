@@ -24,11 +24,9 @@
  
 Start app:
 ```
-poetry init
 poetry install
-source .venv/bin/activate
 cd mysite
-python manage.py makemigrations cardiology
-python manage.py migrate
-python manage.py runserver  
+poetry run python manage.py makemigrations cardiology
+poetry run python manage.py migrate
+poetry run python manage.py runserver  
 ```
