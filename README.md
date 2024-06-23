@@ -21,3 +21,9 @@
     - Respiration
     - BMI
     - Pulse oximetry
+ 
+Startp app:
+```
+cd mysite
+python manage.py runserver  
+```
