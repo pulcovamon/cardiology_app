@@ -28,7 +28,7 @@ class DoctorLoginForm(AuthenticationForm):
 class PatientForm(forms.ModelForm):
     class Meta:
         model = Patient
-        fields = "__all__"  # nebo specifikujte pole, která chcete zobrazit ve formuláři
+        fields = "__all__" 
 
 
 
@@ -52,13 +52,11 @@ class BaseModelForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-        # Nastavení všech nepovinných polí jako volitelná
         for field_name, field in self.fields.items():
             model_field = self._meta.model._meta.get_field(field_name)
             if model_field.blank:
                 field.required = False
 
-        # Nastavení zobrazení jména a příjmení pacienta
         if 'patient_id' in self.fields:
             self.fields['patient_id'].queryset = Patient.objects.all()
             self.fields['patient_id'].label_from_instance = lambda obj: f"{obj.name} {obj.surname}"
