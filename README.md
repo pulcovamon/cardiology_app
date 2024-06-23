@@ -24,9 +24,11 @@
  
 Start app:
 ```
-poetry install
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 cd mysite
-poetry run python manage.py makemigrations cardiology
-poetry run python manage.py migrate
-poetry run python manage.py runserver  
+python manage.py makemigrations cardiology
+python manage.py migrate
+python manage.py runserver  
 ```
