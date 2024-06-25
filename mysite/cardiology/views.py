@@ -530,6 +530,6 @@ def generate_fhir_observation(examination):
                 "display": "Medication management"
             }]
         }
-        fhir_observation["valueString"] = examination.medication
+        fhir_observation["valueString"] = examination.medication_item
 
     return fhir_observation
